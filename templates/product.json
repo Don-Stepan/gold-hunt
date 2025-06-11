@@ -47,8 +47,7 @@
         "description"
       ],
       "settings": {
-        "enable_sticky_info": true,
-        "color_scheme": "scheme-1",
+        "show_accordions": false,
         "slides_pc": 2,
         "space_pc": 10,
         "pagination_pc": true,
@@ -59,19 +58,13 @@
         "navigation_tablet": true,
         "slides_mobile": 1,
         "space_mobile": 8,
-        "pagination_mobile": false,
+        "pagination_mobile": true,
         "navigation_mobile": true,
         "media_size": "large",
         "constrain_to_viewport": true,
         "media_fit": "contain",
         "gallery_layout": "stacked",
-        "mobile_thumbnails": "hide",
-        "media_position": "left",
-        "image_zoom": "lightbox",
-        "hide_variants": true,
-        "enable_video_looping": false,
-        "padding_top": 36,
-        "padding_bottom": 12
+        "mobile_thumbnails": "hide"
       }
     },
     "related-products": {

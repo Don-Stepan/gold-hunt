@@ -3,6 +3,11 @@
   height: auto;
 }
 
+.swiper-button-prev[role=button],
+.swiper-button-next[role=button] {
+  display: block;
+}
+
 .hidden-slide {
   display: none !important;
 }
