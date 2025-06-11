@@ -749,7 +749,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     const swiper = new Swiper('.product-swiper', {
       loop: true,
-      slidesPerView: 1,
+      slidesPerView: 2,
       spaceBetween: 10,
       pagination: {
         el: '.swiper-pagination',
@@ -762,24 +762,26 @@
     });
 
     // === Частина 2: Фільтрація за кольором ===
-    const variantSelector = document.querySelector('[name="options[Color]"]');
+     const colorSelect = Array.from(document.querySelectorAll('select[name^="options"]'))
+    .find(select => select.name.toLowerCase().includes('color'));
+    console.log(colorSelect)
 
-    if (variantSelector) {
-      variantSelector.addEventListener('change', function (e) {
-        const selectedColor = e.target.value.toLowerCase();
-        const slides = document.querySelectorAll('.swiper-slide');
+  if (colorSelect) {
+    colorSelect.addEventListener('change', function (e) {
+      const selectedColor = e.target.value.toLowerCase();
+      const slides = document.querySelectorAll('.swiper-slide');
 
-        slides.forEach((slide) => {
-          const color = slide.getAttribute('data-color');
-          if (color && color.includes(selectedColor)) {
-            slide.style.display = '';
-          } else {
-            slide.style.display = 'none';
-          }
-        });
-
-        swiper.update();
+      slides.forEach((slide) => {
+        const color = slide.getAttribute('data-color')?.toLowerCase() || '';
+        if (color.includes(selectedColor)) {
+          slide.style.display = '';
+        } else {
+          slide.style.display = 'none';
+        }
       });
+
+      swiper.update();
+    });
 
       // Тригер фільтрації при завантаженні сторінки
       variantSelector.dispatchEvent(new Event('change'));
