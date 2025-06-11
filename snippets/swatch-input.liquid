@@ -32,6 +32,7 @@
   value="{{ value }}"
   form="{{ product_form_id }}"
   class="swatch-input__input{% if visually_disabled %} visually-disabled{% endif %}"
+  data-option="{{ optionName }}"
   {% if checked %}
     checked
   {% endif %}
@@ -45,8 +46,8 @@
 <label
   for="{{ id }}"
   title="{{ value }}"
-  class="swatch-input__label{% if shape == 'square' %} swatch-input__label--square{% endif %}"
+  class="swatch-input__label{% if shape == 'square' %} swatch-input__label--square{% endif %} swatch-input__label--{{ optionName }}"
 >
-  {% render 'swatch', swatch: swatch, shape: shape %}
+  {% render 'swatch', swatch: swatch, shape: shape, optionName: optionName %}
   {{ help_text }}
 </label>

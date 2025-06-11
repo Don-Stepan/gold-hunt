@@ -78,8 +78,6 @@
   <div class="page-width">
     <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
       <div class="grid__item product__media-wrapper">
-        {% comment %} {% render 'product-media-gallery', variant_images: variant_images %} {% endcomment %}
-
         <div class="swiper product-swiper">
           <div class="swiper-wrapper">
             {% for media in product.media %}
@@ -94,9 +92,9 @@
             {% endfor %}
           </div>
 
-          <div class="swiper-pagination"></div>
-          <div class="swiper-button-prev"></div>
-          <div class="swiper-button-next"></div>
+          <div class="swiper-pagination" style="display: block;"></div>
+          <div class="swiper-button-prev" style="display: block;"></div>
+          <div class="swiper-button-next" style="display: block;"></div>
         </div>
       </div>
       <div class="product__info-wrapper grid__item{% if settings.page_width > 1400 and section.settings.media_size == "small" %} product__info-wrapper--extra-padding{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
@@ -120,7 +118,7 @@
                   </a>
                 </div>
               {%- when 'price' -%}
-                <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
+                <div id="price-{{ section.id }}" class="product-price" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
                     product: product,
                     use_variant: true,
@@ -244,9 +242,6 @@
                 </modal-opener>
               {%- when 'variant_picker' -%}
                 {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
-
-
-
               {%- when 'buy_buttons' -%}
                 {%- render 'buy-buttons',
                   block: block,
@@ -509,7 +504,7 @@
 </product-info>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', () => {
     const getDeviceType = () => {
       const width = window.innerWidth;
       if (width >= 1024) return 'pc';
@@ -518,67 +513,78 @@
     };
 
     const device = getDeviceType();
+    let swiperInstance;
+    const swiperContainer = document.querySelector('.product-swiper');
+    const swiperWrapper = swiperContainer.querySelector('.swiper-wrapper');
+    const originalSlides = Array.from(swiperWrapper.querySelectorAll('.swiper-slide'));
 
-    const swiper = new Swiper('.product-swiper', {
-      loop: true,
-      slidesPerView: {
-        pc: {{ section.settings.slides_pc }},
-        tablet: {{ section.settings.slides_tablet }},
-        mobile: {{ section.settings.slides_mobile }}
-      }[device],
-      spaceBetween: {
-        pc: {{ section.settings.space_pc }},
-        tablet: {{ section.settings.space_tablet }},
-        mobile: {{ section.settings.space_mobile }}
-      }[device],
-      pagination: {
-        pc: {{ section.settings.pagination_pc }},
-        tablet: {{ section.settings.pagination_tablet }},
-        mobile: {{ section.settings.pagination_mobile }}
-      }[device]
-        ? {
-            el: '.swiper-pagination',
-            clickable: true
-          }
-        : false,
-      navigation: {
-        pc: {{ section.settings.navigation_pc }},
-        tablet: {{ section.settings.navigation_tablet }},
-        mobile: {{ section.settings.navigation_mobile }}
-      }[device]
-        ? {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev'
-          }
-        : false,
-    });
-
-{% comment %} 
-     const swatches = document.querySelectorAll('.custom-color-swatches .swatch');
-    const colorSelect = Array.from(document.querySelectorAll('select[name^="options"]'))
-      .find(select => select.name.toLowerCase().includes('color'));
-console.log(colorSelect)
-    if (!colorSelect) return;
-
-    // Функція оновлення активного стану
-    function updateActive(value) {
-      swatches.forEach(swatch => {
-        swatch.classList.toggle('active', swatch.dataset.value === value);
+    function initSwiper() {
+      swiperInstance = new Swiper('.product-swiper', {
+        loop: true,
+        slidesPerView: {
+          pc: {{ section.settings.slides_pc }},
+          tablet: {{ section.settings.slides_tablet }},
+          mobile: {{ section.settings.slides_mobile }}
+        }[device],
+        spaceBetween: {
+          pc: {{ section.settings.space_pc }},
+          tablet: {{ section.settings.space_tablet }},
+          mobile: {{ section.settings.space_mobile }}
+        }[device],
+        pagination: {
+          pc: {{ section.settings.pagination_pc }},
+          tablet: {{ section.settings.pagination_tablet }},
+          mobile: {{ section.settings.pagination_mobile }}
+        }[device]
+          ? {
+              el: '.swiper-pagination',
+              clickable: true
+            }
+          : false,
+        navigation: {
+          pc: {{ section.settings.navigation_pc }},
+          tablet: {{ section.settings.navigation_tablet }},
+          mobile: {{ section.settings.navigation_mobile }}
+        }[device]
+          ? {
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev'
+            }
+          : false,
       });
     }
 
-    // Встановити активний при завантаженні
-    updateActive(colorSelect.value);
+    function rebuildSlides(selectedColor) {
+      if (swiperInstance) {
+        swiperInstance.destroy(true, true);
+      }
 
-    // Клік по свотчу
-    swatches.forEach(swatch => {
-      swatch.addEventListener('click', () => {
-        const selectedValue = swatch.dataset.value;
-        colorSelect.value = selectedValue;
-        colorSelect.dispatchEvent(new Event('change'));
-        updateActive(selectedValue);
+      swiperWrapper.innerHTML = '';
+
+      originalSlides.forEach((slide) => {
+        const slideColor = slide.dataset.color?.toLowerCase().trim();
+        if (slideColor === selectedColor) {
+          swiperWrapper.appendChild(slide.cloneNode(true));
+        }
       });
-    }); {% endcomment %}
+
+      initSwiper();
+    }
+
+    document.body.addEventListener('click', (e) => {
+      const radio = e.target.closest('input[type="radio"][data-option="Color"]');
+      if (radio) {
+        const selectedColor = radio.value.toLowerCase().trim();
+        rebuildSlides(selectedColor);
+      }
+    });
+
+    const checked = document.querySelector('input[type="radio"][data-option="Color"]:checked');
+    if (checked) {
+      rebuildSlides(checked.value.toLowerCase().trim());
+    } else {
+      initSwiper();
+    }
   });
 </script>
 
