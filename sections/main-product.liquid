@@ -9,6 +9,7 @@
     data-zoom-on-hover
   {% endif %}
 >
+  {{ 'swiper.min.css' | asset_url | stylesheet_tag }}
   {{ 'section-main-product.css' | asset_url | stylesheet_tag }}
   {{ 'component-accordion.css' | asset_url | stylesheet_tag }}
   {{ 'component-price.css' | asset_url | stylesheet_tag }}
@@ -39,6 +40,7 @@
     }
   {%- endstyle -%}
 
+  <script src="{{ 'swiper.min.js' | asset_url }}" defer="defer"></script> 
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
   {%- if product.quantity_price_breaks_configured? -%}
@@ -76,7 +78,26 @@
   <div class="page-width">
     <div class="product product--{{ section.settings.media_size }} product--{{ section.settings.media_position }} product--{{ section.settings.gallery_layout }} product--mobile-{{ section.settings.mobile_thumbnails }} grid grid--1-col {% if product.media.size > 0 %}grid--2-col-tablet{% else %}product--no-media{% endif %}">
       <div class="grid__item product__media-wrapper">
-        {% render 'product-media-gallery', variant_images: variant_images %}
+        {% comment %} {% render 'product-media-gallery', variant_images: variant_images %} {% endcomment %}
+
+        <div class="swiper product-swiper">
+          <div class="swiper-wrapper">
+            {% for media in product.media %}
+              {% if media.media_type == 'image' %}
+                <div
+                  class="swiper-slide"
+                  data-color="{{ media.alt | downcase | strip }}"
+                >
+                  {{ media | image_url: width: 800 | image_tag }}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
+        </div>
       </div>
       <div class="product__info-wrapper grid__item{% if settings.page_width > 1400 and section.settings.media_size == "small" %} product__info-wrapper--extra-padding{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
         <section
@@ -723,6 +744,48 @@
     </script>
   </div>
 </product-info>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const swiper = new Swiper('.product-swiper', {
+      loop: true,
+      slidesPerView: 1,
+      spaceBetween: 10,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev'
+      }
+    });
+
+    // === Частина 2: Фільтрація за кольором ===
+    const variantSelector = document.querySelector('[name="options[Color]"]');
+
+    if (variantSelector) {
+      variantSelector.addEventListener('change', function (e) {
+        const selectedColor = e.target.value.toLowerCase();
+        const slides = document.querySelectorAll('.swiper-slide');
+
+        slides.forEach((slide) => {
+          const color = slide.getAttribute('data-color');
+          if (color && color.includes(selectedColor)) {
+            slide.style.display = '';
+          } else {
+            slide.style.display = 'none';
+          }
+        });
+
+        swiper.update();
+      });
+
+      // Тригер фільтрації при завантаженні сторінки
+      variantSelector.dispatchEvent(new Event('change'));
+    }
+  });
+</script>
 
 {% schema %}
 {
