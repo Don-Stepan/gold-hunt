@@ -510,20 +510,50 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    const getDeviceType = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) return 'pc';
+      if (width >= 768) return 'tablet';
+      return 'mobile';
+    };
+
+    const device = getDeviceType();
+
     const swiper = new Swiper('.product-swiper', {
       loop: true,
-      slidesPerView: 2,
-      spaceBetween: 10,
+      slidesPerView: {
+        pc: {{ section.settings.slides_pc }},
+        tablet: {{ section.settings.slides_tablet }},
+        mobile: {{ section.settings.slides_mobile }}
+      }[device],
+      spaceBetween: {
+        pc: {{ section.settings.space_pc }},
+        tablet: {{ section.settings.space_tablet }},
+        mobile: {{ section.settings.space_mobile }}
+      }[device],
       pagination: {
-        el: '.swiper-pagination',
-        clickable: true
-      },
+        pc: {{ section.settings.pagination_pc }},
+        tablet: {{ section.settings.pagination_tablet }},
+        mobile: {{ section.settings.pagination_mobile }}
+      }[device]
+        ? {
+            el: '.swiper-pagination',
+            clickable: true
+          }
+        : false,
       navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev'
-      }
+        pc: {{ section.settings.navigation_pc }},
+        tablet: {{ section.settings.navigation_tablet }},
+        mobile: {{ section.settings.navigation_mobile }}
+      }[device]
+        ? {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev'
+          }
+        : false,
     });
 
+{% comment %} 
      const swatches = document.querySelectorAll('.custom-color-swatches .swatch');
     const colorSelect = Array.from(document.querySelectorAll('select[name^="options"]'))
       .find(select => select.name.toLowerCase().includes('color'));
@@ -548,7 +578,7 @@ console.log(colorSelect)
         colorSelect.dispatchEvent(new Event('change'));
         updateActive(selectedValue);
       });
-    });
+    }); {% endcomment %}
   });
 </script>
 
@@ -1914,6 +1944,104 @@ console.log(colorSelect)
       "id": "color_scheme",
       "label": "t:sections.all.colors.label",
       "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Swiper Settings PC"
+    },
+    {
+      "type": "range",
+      "id": "slides_pc",
+      "label": "Slides on PC",
+      "min": 1,
+      "max": 5,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "space_pc",
+      "label": "Indent between slides (PC)",
+      "min": 0,
+      "max": 50,
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "pagination_pc",
+      "label": "Show pagination on PC",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "navigation_pc",
+      "label": "Show arrows on PC",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "Swiper Settings Tablet"
+    },
+    {
+      "type": "range",
+      "id": "slides_tablet",
+      "label": "Slides on a tablet",
+      "min": 1,
+      "max": 4,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "space_tablet",
+      "label": "Indent between slides (tablet)",
+      "min": 0,
+      "max": 50,
+      "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "pagination_tablet",
+      "label": "Show pagination on tablet",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "navigation_tablet",
+      "label": "Show arrows on tablet",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "Swiper Settings Mobile"
+    },
+    {
+      "type": "range",
+      "id": "slides_mobile",
+      "label": "Slides on mobile",
+      "min": 1,
+      "max": 3,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "space_mobile",
+      "label": "Indent between slides (mobile)",
+      "min": 0,
+      "max": 50,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "pagination_mobile",
+      "label": "Show pagination on mobile",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "navigation_mobile",
+      "label": "Show arrows on mobile",
+      "default": true
     },
     {
       "type": "header",
