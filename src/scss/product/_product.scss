@@ -75,3 +75,42 @@
         }
     }
 }
+
+.accordion-metafield {
+    border-top: none !important;
+    padding: 7px 0;
+
+    .heading {
+        font-size: 20px;
+        color: #085c5f;
+        cursor: pointer;
+        position: relative;
+
+        &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: translateY(-50%) rotate(45deg);
+            transition: transform 0.3s ease;
+        }
+    }
+
+    &.active .heading::after {
+        transform: translateY(-50%) rotate(-135deg);
+    }
+
+    .content {
+        display: none;
+    }
+
+    &.active {
+        .content {
+            display: block;
+        }
+    }
+}

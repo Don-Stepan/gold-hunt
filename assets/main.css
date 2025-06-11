@@ -56,3 +56,35 @@
 .product-form__submit::after, .product-form__submit::before {
   display: none;
 }
+
+.accordion-metafield {
+  border-top: none !important;
+  padding: 7px 0;
+}
+.accordion-metafield .heading {
+  font-size: 20px;
+  color: #085c5f;
+  cursor: pointer;
+  position: relative;
+}
+.accordion-metafield .heading::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-50%) rotate(45deg);
+  transition: transform 0.3s ease;
+}
+.accordion-metafield.active .heading::after {
+  transform: translateY(-50%) rotate(-135deg);
+}
+.accordion-metafield .content {
+  display: none;
+}
+.accordion-metafield.active .content {
+  display: block;
+}
